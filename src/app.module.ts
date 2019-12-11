@@ -1,10 +1,26 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { ProduceModule } from './produce/produce.module';
+import { LocationModule } from './location/location.module';
+import { UserModule } from './user/user.module';
+import { PriceModule } from './price/price.module';
+import { Produce as ProduceEntity } from './produce/produce.entity';
+import { Location as LocationEntity } from './location/location.entity';
 
 @Module({
-  imports: [],
+  imports: [TypeOrmModule.forRoot({
+    type: 'postgres',
+    host: 'localhost',
+    port: 5499,
+    username: 'postgres',
+    password: 'docker',
+    database: 'ducetrak',
+    entities: [ProduceEntity, LocationEntity],
+    synchronize: true,
+  }), ProduceModule, LocationModule, UserModule, PriceModule],
   controllers: [AppController],
   providers: [AppService],
 })
-export class AppModule {}
+export class AppModule { }
