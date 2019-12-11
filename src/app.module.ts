@@ -10,6 +10,8 @@ import { Produce as ProduceEntity } from './produce/produce.entity';
 import { Location as LocationEntity } from './location/location.entity';
 import { Price as PriceEntity } from './price/price.entity';
 import { User as UserEntity } from './user/user.entity';
+import { Type as TypeEntity } from './core/entities/type.entity';
+import { CoreModule } from './core/core.module';
 
 @Module({
   imports: [TypeOrmModule.forRoot({
@@ -19,9 +21,9 @@ import { User as UserEntity } from './user/user.entity';
     username: 'postgres',
     password: 'docker',
     database: 'ducetrak',
-    entities: [ProduceEntity, LocationEntity, PriceEntity, UserEntity],
+    entities: [ProduceEntity, LocationEntity, PriceEntity, UserEntity, TypeEntity],
     synchronize: true,
-  }), ProduceModule, LocationModule, UserModule, PriceModule],
+  }), ProduceModule, LocationModule, UserModule, PriceModule, CoreModule],
   controllers: [AppController],
   providers: [AppService],
 })

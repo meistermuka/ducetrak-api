@@ -8,27 +8,27 @@ export class User extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column()
+    @Column({ unique: true })
     userName: string;
 
-    @Column()
+    @Column({ nullable: true })
     firstName: string;
 
-    @Column()
+    @Column({ nullable: true })
     lastName: string;
 
-    @Column()
+    @Column({ unique: true })
     email: string;
 
     @Column('timestamp')
     createdDate: string;
 
-    @OneToMany(type => ProduceEntity, produceEntity => produceEntity.userId)
+    @OneToMany(type => ProduceEntity, produceEntity => produceEntity.user)
     produce: ProduceEntity[];
 
-    @OneToMany(type => PriceEntity, priceEntity => priceEntity.userId)
+    @OneToMany(type => PriceEntity, priceEntity => priceEntity.user)
     price: PriceEntity[];
 
-    @OneToMany(type => LocationEntity, locationEntity => locationEntity.userId)
+    @OneToMany(type => LocationEntity, locationEntity => locationEntity.user)
     location: LocationEntity[];
 }

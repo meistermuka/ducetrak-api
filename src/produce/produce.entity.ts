@@ -2,6 +2,7 @@ import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, BaseEntit
 import { Location as LocationEntity } from '../location/location.entity';
 import { Price as PriceEntity } from '../price/price.entity';
 import { User as UserEntity } from '../user/user.entity';
+import { Type as TypeEntity } from '../core/entities/type.entity';
 
 @Entity()
 export class Produce extends BaseEntity {
@@ -12,8 +13,8 @@ export class Produce extends BaseEntity {
     @Column('text')
     name: string;
 
-    @Column('int')
-    typeId: number;
+    @ManyToOne(type => TypeEntity, typeEntity => typeEntity.produce)
+    type: number;
 
     @Column('timestamp')
     createdDate: string;
@@ -21,12 +22,12 @@ export class Produce extends BaseEntity {
     @Column('timestamp')
     modifiedDate: string;
 
-    @ManyToOne(type => LocationEntity, locationEntity => locationEntity.id)
-    locationId: LocationEntity;
+    @ManyToOne(type => LocationEntity, locationEntity => locationEntity.produce)
+    location: LocationEntity;
 
-    @OneToMany(type => PriceEntity, priceEntity => priceEntity.produceId)
+    @OneToMany(type => PriceEntity, priceEntity => priceEntity.produce)
     price: PriceEntity[];
 
     @ManyToOne(type => UserEntity, userEntity => userEntity.produce)
-    userId: UserEntity;
+    user: UserEntity;
 }

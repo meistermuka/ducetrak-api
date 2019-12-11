@@ -17,9 +17,9 @@ export class Location extends BaseEntity {
     @Column('text')
     coordinates: string;
 
-    @OneToMany(type => ProduceEntity, produceEntity => produceEntity.locationId)
+    @OneToMany(type => ProduceEntity, produceEntity => produceEntity.location)
     produce: ProduceEntity[];
 
     @ManyToOne(type => UserEntity, userEntity => userEntity.location)
-    userId: UserEntity;
+    user: UserEntity;
 }

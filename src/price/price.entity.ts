@@ -7,17 +7,17 @@ export class Price extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
-    @Column('int')
+    @Column()
     price: number;
 
     @Column()
     unit: string;
 
     @ManyToOne(type => ProduceEntity, produceEntity => produceEntity.price)
-    produceId: ProduceEntity;
+    produce: ProduceEntity;
 
     @ManyToOne(type => UserEntity, userEntity => userEntity.price)
-    userId: UserEntity;
+    user: UserEntity;
 
     @Column('timestamp')
     createdDate: string;
