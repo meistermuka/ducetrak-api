@@ -1,0 +1,9 @@
+postgresql:
+    restart: always
+    image: postgres:latest
+    ports:
+        - "5499:5432"
+    environment: 
+        - POSTGRES_PASSWORD=docker
+    volumes:
+        - $HOME/docker/volumes/postgres:/var/lib/postgresql/data
