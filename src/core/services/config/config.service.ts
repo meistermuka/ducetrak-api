@@ -1,24 +1,52 @@
+import * as fs from 'fs';
+
+import * as dotenv from 'dotenv';
+import * as Joi from '@hapi/joi';
 import { Injectable } from '@nestjs/common';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
+
 import { Type as TypeEntity } from '../../entities/type.entity';
 import { Produce as ProduceEntity } from '../../../produce/produce.entity';
 import { Location as LocationEntity } from '../../../location/location.entity';
 import { Price as PriceEntity } from '../../../price/price.entity';
 import { User as UserEntity } from '../../../user/user.entity';
 
-import * as dotenv from 'dotenv';
-import * as fs from 'fs';
+export type EnvConfig = Record<string, string>;
 
 @Injectable()
 export class ConfigService {
-    private readonly envConfig: Record<string, string>;
+    private readonly envConfig: EnvConfig;
 
     constructor(filePath: string) {
-        this.envConfig = dotenv.parse(fs.readFileSync(filePath));
+        const config = dotenv.parse(fs.readFileSync(filePath));
+        this.envConfig = this.validateInput(config);
+    }
+
+    private validateInput(envConfig: EnvConfig): EnvConfig {
+        const envVarsSchema: Joi.ObjectSchema = Joi.object({
+            NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
+            TYPEORM_HOST: Joi.string().required(),
+            TYPEORM_USERNAME: Joi.string().required(),
+            TYPEORM_PASSWORD: Joi.string().required(),
+            TYPEORM_DATABASE: Joi.string().required(),
+            TYPEORM_PORT: Joi.number().required(),
+        });
+
+        const { error, value: validateEnvConfig } = envVarsSchema.validate(envConfig);
+
+        if (error) {
+            throw new Error(`Config validation error: ${error.message}`);
+        }
+
+        return validateEnvConfig;
     }
 
     get(key: string): string {
         return this.envConfig[key];
+    }
+
+    get env() {
+        return this.envConfig;
     }
 
     public getTypeOrmConfig(): TypeOrmModuleOptions {
