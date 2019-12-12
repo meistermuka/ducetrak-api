@@ -24,6 +24,8 @@
     "@nestjs/core": "^6.0.0",
     "@nestjs/platform-express": "^6.0.0",
     "@nestjs/typeorm": "^6.2.0",
+    "@types/dotenv": "^8.2.0",
+    "dotenv": "^8.2.0",
     "pg": "^7.14.0",
     "reflect-metadata": "^0.1.12",
     "rimraf": "^2.6.2",

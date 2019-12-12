@@ -1,6 +1,7 @@
-import { BaseEntity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { BaseEntity, PrimaryGeneratedColumn, Column, OneToMany, Entity } from 'typeorm';
 import { Produce as ProduceEntity } from '../../produce/produce.entity';
 
+@Entity()
 export class Type extends BaseEntity {
 
     @PrimaryGeneratedColumn()
