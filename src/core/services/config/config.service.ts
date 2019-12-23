@@ -1,15 +1,15 @@
+import * as dotenv from 'dotenv';
 import * as fs from 'fs';
 
-import * as dotenv from 'dotenv';
 import * as Joi from '@hapi/joi';
 import { Injectable } from '@nestjs/common';
 import { TypeOrmModuleOptions } from '@nestjs/typeorm';
 
-import { Type as TypeEntity } from '../../entities/type.entity';
-import { Produce as ProduceEntity } from '../../../produce/produce.entity';
 import { Location as LocationEntity } from '../../../location/location.entity';
 import { Price as PriceEntity } from '../../../price/price.entity';
+import { Produce as ProduceEntity } from '../../../produce/produce.entity';
 import { User as UserEntity } from '../../../user/user.entity';
+import { Type as TypeEntity } from '../../entities/type.entity';
 
 export type EnvConfig = Record<string, string>;
 

@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 
-@Controller('location')
+@Controller('locations')
 export class LocationController {
 
     @Get()

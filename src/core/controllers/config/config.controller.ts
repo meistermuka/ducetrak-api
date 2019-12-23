@@ -1,6 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 
-@Controller('config')
+@Controller('configs')
 export class ConfigController {
 
     @Get()
