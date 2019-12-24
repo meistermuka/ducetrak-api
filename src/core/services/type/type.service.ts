@@ -9,8 +9,11 @@ export class TypeService {
         return await Type.find();
     }
 
+    async getType(id: number): Promise<Type> {
+        return await Type.findOneOrFail({ id});
+    }
+
     async postType(typeDto: CreateTypeDto): Promise<void> {
-        //Type.insert()
         const type = new Type();
         type.name = typeDto.name;
         await type.save();
