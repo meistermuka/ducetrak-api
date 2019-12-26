@@ -30,6 +30,7 @@ export class ConfigService {
             TYPEORM_PASSWORD: Joi.string().required(),
             TYPEORM_DATABASE: Joi.string().required(),
             TYPEORM_PORT: Joi.number().required(),
+            TYPEORM_MIGRATION_TABLE: Joi.string(),
         });
 
         const { error, value: validateEnvConfig } = envVarsSchema.validate(envConfig);
@@ -59,6 +60,11 @@ export class ConfigService {
             database: this.get('TYPEORM_DATABASE'),
             synchronize: true,
             entities: [TypeEntity, ProduceEntity, LocationEntity, PriceEntity, UserEntity],
+            migrationsTableName: this.get('TYPEORM_MIGRATION_TABLE'),
+            migrations: ['migration/*.ts'],
+            cli: {
+                migrationsDir: 'migration',
+            }
         };
     }
 }
