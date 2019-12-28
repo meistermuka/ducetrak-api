@@ -39,7 +39,7 @@ export class InitialMigration1577381284207 implements MigrationInterface {
             name TEXT COLLATE pg_catalog."default" NOT NULL,
             address TEXT COLLATE pg_catalog."default" NOT NULL,
             coordinates TEXT COLLATE pg_catalog."default" NOT NULL,
-            "userId" INTEGER,
+            "userId" INTEGER NOT NULL,
             CONSTRAINT "PK_location_id" PRIMARY KEY (id),
             CONSTRAINT "FK_location_user_userId" FOREIGN KEY ("userId")
                 REFERENCES "user" (id) MATCH SIMPLE
@@ -57,9 +57,9 @@ export class InitialMigration1577381284207 implements MigrationInterface {
             name TEXT COLLATE pg_catalog."default" NOT NULL,
             "createdDate" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
             "modifiedDate" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
-            "typeId" INTEGER,
-            "locationId" INTEGER,
-            "userId" INTEGER,
+            "typeId" INTEGER NOT NULL,
+            "locationId" INTEGER NOT NULL,
+            "userId" INTEGER NOT NULL,
             CONSTRAINT "PK_produce_id" PRIMARY KEY (id),
             CONSTRAINT "FK_type_typeId" FOREIGN KEY ("typeId")
                 REFERENCES type (id) MATCH SIMPLE
@@ -86,8 +86,8 @@ export class InitialMigration1577381284207 implements MigrationInterface {
             unit CHARACTER VARYING COLLATE pg_catalog."default" NOT NULL,
             "createdDate" TIMESTAMP WITHOUT TIME ZONE NOT NULL,
             active BOOLEAN NOT NULL,
-            "produceId" INTEGER,
-            "userId" INTEGER,
+            "produceId" INTEGER NOT NULL,
+            "userId" INTEGER NOT NULL,
             CONSTRAINT "PK_price_id" PRIMARY KEY (id),
             CONSTRAINT "FK_price_user_userId" FOREIGN KEY ("userId")
                 REFERENCES "user" (id) MATCH SIMPLE

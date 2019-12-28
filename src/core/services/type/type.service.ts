@@ -10,7 +10,7 @@ export class TypeService {
     }
 
     async getType(id: number): Promise<Type> {
-        return await Type.findOneOrFail({ id});
+        return await Type.findOne({ id});
     }
 
     async postType(typeDto: CreateTypeDto): Promise<void> {
