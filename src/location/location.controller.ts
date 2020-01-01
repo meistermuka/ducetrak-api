@@ -1,8 +1,12 @@
-import { Controller, Get, Post, Body, BadRequestException, Param, NotFoundException } from '@nestjs/common';
-import { CreateLocationDto } from './location.dto';
-import { LocationService } from './location.service';
-import { Location } from './location.entity';
 import { isEmpty } from 'lodash';
+
+import {
+    BadRequestException, Body, Controller, Get, NotFoundException, Param, Post
+} from '@nestjs/common';
+
+import { LocationDto } from './location.dto';
+import { Location } from './location.entity';
+import { LocationService } from './location.service';
 
 @Controller('locations')
 export class LocationController {
@@ -24,9 +28,9 @@ export class LocationController {
     }
 
     @Post()
-    async postLocation(@Body() createLocationDto: CreateLocationDto​​): Promise<void> {
+    async postLocation(@Body() locationDto: LocationDto​​): Promise<void> {
         try {
-            await this.locationService.postLocation(createLocationDto);
+            await this.locationService.postLocation(locationDto);
         } catch (e) {
             throw new BadRequestException();
         }        

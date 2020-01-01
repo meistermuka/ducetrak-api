@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Body, Put, Param, NotFoundException, Delete } from '@nestjs/common';
-import { TypeService } from '../../services';
-import { Type } from '../../../core/entities/type.entity';
-import { CreateTypeDto } from '../../dto/type.dto';
-
 import { isEmpty } from 'lodash';
+
+import { Body, Controller, Get, NotFoundException, Param, Post } from '@nestjs/common';
+
+import { Type } from '../../../core/entities/type.entity';
+import { TypeDto } from '../../dto/type.dto';
+import { TypeService } from '../../services';
 
 @Controller('types')
 export class TypeController {
@@ -26,7 +27,7 @@ export class TypeController {
     }
 
     @Post()
-    postType(@Body() createTypeDto: CreateTypeDto): void {
-        this.typeService.postType(createTypeDto);
+    postType(@Body() typeDto: TypeDto): void {
+        this.typeService.postType(typeDto);
     }
 }

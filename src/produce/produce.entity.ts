@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, BaseEntity } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Type as TypeEntity } from '../core/entities/type.entity';
 import { Location as LocationEntity } from '../location/location.entity';
 import { Price as PriceEntity } from '../price/price.entity';
 import { User as UserEntity } from '../user/user.entity';
-import { Type as TypeEntity } from '../core/entities/type.entity';
 
 @Entity()
 export class Produce extends BaseEntity {
@@ -14,7 +15,7 @@ export class Produce extends BaseEntity {
     name: string;
 
     @ManyToOne(type => TypeEntity, typeEntity => typeEntity.produce)
-    type: number;
+    type: TypeEntity;
 
     @Column('timestamp')
     createdDate: string;

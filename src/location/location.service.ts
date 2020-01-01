@@ -1,8 +1,10 @@
-import { Injectable } from '@nestjs/common';
-import { CreateLocationDto } from './location.dto';
-import { Location } from './location.entity';
-import { User } from '../user/user.entity';
 import { isEmpty } from 'lodash';
+
+import { Injectable } from '@nestjs/common';
+
+import { User } from '../user/user.entity';
+import { LocationDto } from './location.dto';
+import { Location } from './location.entity';
 
 @Injectable()
 export class LocationService {
@@ -15,18 +17,18 @@ export class LocationService {
         return await Location.findOne({ id, }, { relations: ['user']});
     }
 
-    async postLocation(locationDto: CreateLocationDto​​): Promise<void> {
+    async postLocation(locationDto: LocationDto​​): Promise<void> {
 
         const location = new Location();
         location.name = locationDto.name;
         location.address = locationDto.address;
         location.coordinates = locationDto.coordinates;
-        const oneUser = await User.findOne({ id: locationDto.user });
+        const user = await User.findOne({ id: locationDto.user });
         
-        if (isEmpty(oneUser)) {
+        if (isEmpty(user)) {
             throw new Error('No User Found');
         }
-        location.user = oneUser;
+        location.user = user;
         location.save();
     }
 }

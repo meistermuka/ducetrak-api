@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
+
 import { Type } from '../../../core/entities/type.entity';
-import { CreateTypeDto } from '../../dto/type.dto';
+import { TypeDto } from '../../dto/type.dto';
 
 @Injectable()
 export class TypeService {
@@ -13,7 +14,7 @@ export class TypeService {
         return await Type.findOne({ id});
     }
 
-    async postType(typeDto: CreateTypeDto): Promise<void> {
+    async postType(typeDto: TypeDto): Promise<void> {
         const type = new Type();
         type.name = typeDto.name;
         await type.save();
