@@ -27,7 +27,7 @@ export class TypeController {
     }
 
     @Post()
-    postType(@Body() typeDto: TypeDto): void {
-        this.typeService.postType(typeDto);
+    async postType(@Body() typeDto: TypeDto): Promise<void> {
+        await this.typeService.postType(typeDto);
     }
 }

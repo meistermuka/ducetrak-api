@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Body, Controller, Get } from '@nestjs/common';
 
 @Controller('prices')
 export class PriceController {

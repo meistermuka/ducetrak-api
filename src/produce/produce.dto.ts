@@ -1,3 +1,5 @@
+import { PriceDto } from 'src/price/price.dto';
+
 import { ApiProperty } from '@nestjs/swagger';
 
 export class ProduceDto {
@@ -10,4 +12,6 @@ export class ProduceDto {
     location: number;
     @ApiProperty()
     user: number;
+    @ApiProperty()
+    price: PriceDto;
 }

@@ -4,6 +4,7 @@ import { Injectable } from '@nestjs/common';
 
 import { Type } from '../core/entities/type.entity';
 import { Location } from '../location/location.entity';
+import { PriceService } from '../price/price.service';
 import { User } from '../user/user.entity';
 import { ProduceDto } from './produce.dto';
 import { Produce } from './produce.entity';
@@ -11,8 +12,10 @@ import { Produce } from './produce.entity';
 @Injectable()
 export class ProduceService {
 
+    constructor(private priceService: PriceService) {}
+
     async getProduce(id: number): Promise<Produce> {
-        return await Produce.findOne({ id }, { relations: ['location', 'user', 'type'] });
+        return await Produce.findOne({ id }, { relations: ['location', 'user', 'type', 'price'] });
     }
 
     async getAllProduce(): Promise<Produce[]> {
@@ -50,7 +53,21 @@ export class ProduceService {
         produce.createdDate = new Date().toISOString();
         produce.modifiedDate = new Date().toISOString();
         
-        produce.save();
+        const insertedProduce = await produce.save();
+
+        const produceId = insertedProduce.id;
+        const user = insertedProduce.user;
+
+        if (isEmpty(produceDto.price)) {
+            throw new Error('No Price Found');
+        }
+
+        try {
+            await this.priceService.postPrice(produceId, user, produceDto.price);
+        } catch (e) {
+            console.log(e);
+        }
+        
     }
 
     async updateProduce(id: number, produceDto: ProduceDto): Promise<void> {
