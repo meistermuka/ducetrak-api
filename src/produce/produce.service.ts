@@ -25,23 +25,29 @@ export class ProduceService {
     private async createOrUpdateProduce(produce: Produce, produceDto: ProduceDto): Promise<void> {
         produce.name = produceDto.name;
 
-        const location = await Location.findOne({ id: produceDto.location });
-        if(isEmpty(location)) {
-            throw new Error('No Location Found');
+        if(!isEmpty(produceDto.location)) {
+            const location = await Location.findOne({ id: produceDto.location });
+            if(isEmpty(location)) {
+                throw new Error('No Location Found');
+            }
+            produce.location = location;
         }
-        produce.location = location;
 
-        const user = await User.findOne({ id: produceDto.user });
-        if(isEmpty(user)) {
-            throw new Error('No User Found');
+        if(!isEmpty(produceDto.user)) {
+            const user = await User.findOne({ id: produceDto.user });
+            if(isEmpty(user)) {
+                throw new Error('No User Found');
+            }
+            produce.user = user;
         }
-        produce.user = user;
 
-        const type = await Type.findOne({ id: produceDto.type });
-        if(isEmpty(type)) {
-            throw new Error('No Type Found');
+        if(!isEmpty(produceDto.type)) {
+            const type = await Type.findOne({ id: produceDto.type });
+            if(isEmpty(type)) {
+                throw new Error('No Type Found');
+            }
+            produce.type = type;
         }
-        produce.type = type;
 
     }
 
@@ -74,6 +80,14 @@ export class ProduceService {
         const produce = await Produce.findOne({ id }, { relations: ['location', 'user', 'type'] });
         await this.createOrUpdateProduce(produce, produceDto);
         produce.modifiedDate = new Date().toISOString();
+
+        if(!isEmpty(produceDto.price)) {
+            try {
+                await this.priceService.updatePrice(id, produce.user, produceDto.price);
+            } catch (e) {
+                console.log(e);
+            }
+        }
 
         produce.save();
     }
