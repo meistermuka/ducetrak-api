@@ -25,6 +25,8 @@ export class ConfigService {
     private validateInput(envConfig: EnvConfig): EnvConfig {
         const envVarsSchema: Joi.ObjectSchema = Joi.object({
             NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
+            HMAC_KEY: Joi.string().required(),
+            TOKEN_SECRET: Joi.string().required(),
             TYPEORM_HOST: Joi.string().required(),
             TYPEORM_USERNAME: Joi.string().required(),
             TYPEORM_PASSWORD: Joi.string().required(),

@@ -1,15 +1,21 @@
-import { BaseEntity, Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
-import { Produce as ProduceEntity } from '../produce/produce.entity';
-import { Price as PriceEntity } from '../price/price.entity';
+import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { ConfigService } from '../core/services';
 import { Location as LocationEntity } from '../location/location.entity';
+import { Price as PriceEntity } from '../price/price.entity';
+import { Produce as ProduceEntity } from '../produce/produce.entity';
 
 @Entity()
 export class User extends BaseEntity {
+
     @PrimaryGeneratedColumn()
     id: number;
 
     @Column({ unique: true })
     userName: string;
+
+    @Column()
+    password: string;
 
     @Column({ nullable: true })
     firstName: string;
@@ -19,6 +25,9 @@ export class User extends BaseEntity {
 
     @Column({ unique: true })
     email: string;
+
+    @Column()
+    role: string;
 
     @Column('timestamp')
     createdDate: string;

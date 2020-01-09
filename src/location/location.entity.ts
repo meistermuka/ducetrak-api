@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, BaseEntity, ManyToOne } from 'typeorm';
-import { Produce as ProduceEntity } from 'src/produce/produce.entity';
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+
+import { Produce as ProduceEntity } from '../produce/produce.entity';
 import { User as UserEntity } from '../user/user.entity';
 
 @Entity()

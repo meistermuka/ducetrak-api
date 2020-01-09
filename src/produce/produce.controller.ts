@@ -19,7 +19,6 @@ export class ProduceController {
         if(allProduce.length === 0) {
             throw new NotFoundException();
         }
-
         return allProduce;
     }
 
@@ -37,6 +36,7 @@ export class ProduceController {
         try {
             await this.produceService.postProduce(produceDto);
         } catch (e) {
+            console.log(e);
             throw new BadRequestException();
         }
     }
@@ -46,6 +46,7 @@ export class ProduceController {
         try {
             await this.produceService.updateProduce(id, produceDto);
         } catch (e) {
+            console.log(e);
             throw new BadRequestException();
         }
     }
@@ -55,6 +56,7 @@ export class ProduceController {
         try {
             await this.produceService.deleteProduce(id);
         } catch (e) {
+            console.log(e);
             throw new BadRequestException();
         }
     }

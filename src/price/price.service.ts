@@ -1,7 +1,6 @@
-import { Produce } from 'src/produce/produce.entity';
-
 import { Injectable } from '@nestjs/common';
 
+import { Produce } from '../produce/produce.entity';
 import { User } from '../user/user.entity';
 import { PriceDto } from './price.dto';
 import { Price } from './price.entity';

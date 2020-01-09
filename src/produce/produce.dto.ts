@@ -1,6 +1,6 @@
-import { PriceDto } from 'src/price/price.dto';
-
 import { ApiProperty } from '@nestjs/swagger';
+
+import { PriceDto } from '../price/price.dto';
 
 export class ProduceDto {
 
