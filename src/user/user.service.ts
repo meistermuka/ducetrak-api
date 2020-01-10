@@ -18,6 +18,7 @@ export class UserService {
         user.lastName = userDto.lastName;
         user.email = userDto.email;
         user.role = 'USER';
+        user.createdDate = new Date().toISOString();
         user.password = this.hashPassword(userDto.password);
 
         await user.save();
