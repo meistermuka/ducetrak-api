@@ -7,7 +7,7 @@ export class RoleColumn1578699064600 implements MigrationInterface {
     }
 
     public async down(queryRunner: QueryRunner): Promise<any> {
-        await queryRunner.query(`ALTER TABLE "user" DROP COLUMN role`);
+        await queryRunner.query(`ALTER TABLE "user" DROP COLUMN IF EXISTS role`);
     }
 
 }

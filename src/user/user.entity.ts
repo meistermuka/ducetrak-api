@@ -1,6 +1,6 @@
-import { BaseEntity, Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 
-import { ConfigService } from '../core/services';
+import { Role as RoleEntity } from '../core/entities/role.entity';
 import { Location as LocationEntity } from '../location/location.entity';
 import { Price as PriceEntity } from '../price/price.entity';
 import { Produce as ProduceEntity } from '../produce/produce.entity';
@@ -26,8 +26,11 @@ export class User extends BaseEntity {
     @Column({ unique: true })
     email: string;
 
-    @Column()
-    role: string;
+    //@Column()
+    //role: string;
+
+    @ManyToOne(type => RoleEntity, roleEntity => roleEntity.user)
+    role: RoleEntity;
 
     @Column('timestamp')
     createdDate: string;

@@ -2,6 +2,7 @@ import { sha256 } from 'js-sha256';
 
 import { Injectable } from '@nestjs/common';
 
+import { Roles } from '../core/core.constants';
 import { ConfigService } from '../core/services';
 import { UserDto } from './user.dto';
 import { User } from './user.entity';
@@ -17,7 +18,7 @@ export class UserService {
         user.firstName = userDto.firstName;
         user.lastName = userDto.lastName;
         user.email = userDto.email;
-        user.role = 'USER';
+        //user.role = Roles.USER;
         user.createdDate = new Date().toISOString();
         user.password = this.hashPassword(userDto.password);
 
