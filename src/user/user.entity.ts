@@ -26,14 +26,14 @@ export class User extends BaseEntity {
     @Column({ unique: true })
     email: string;
 
-    //@Column()
-    //role: string;
-
     @ManyToOne(type => RoleEntity, roleEntity => roleEntity.user)
     role: RoleEntity;
 
     @Column('timestamp')
     createdDate: string;
+
+    @Column()
+    deleted: boolean;
 
     @OneToMany(type => ProduceEntity, produceEntity => produceEntity.user)
     produce: ProduceEntity[];

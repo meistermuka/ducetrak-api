@@ -9,6 +9,7 @@ import { Location as LocationEntity } from '../../../location/location.entity';
 import { Price as PriceEntity } from '../../../price/price.entity';
 import { Produce as ProduceEntity } from '../../../produce/produce.entity';
 import { User as UserEntity } from '../../../user/user.entity';
+import { Role as RoleEntity } from '../../entities/role.entity';
 import { Type as TypeEntity } from '../../entities/type.entity';
 
 export type EnvConfig = Record<string, string>;
@@ -61,7 +62,7 @@ export class ConfigService {
             password: this.get('TYPEORM_PASSWORD'),
             database: this.get('TYPEORM_DATABASE'),
             synchronize: true,
-            entities: [TypeEntity, ProduceEntity, LocationEntity, PriceEntity, UserEntity],
+            entities: [TypeEntity, ProduceEntity, LocationEntity, PriceEntity, UserEntity, RoleEntity],
             migrationsTableName: this.get('TYPEORM_MIGRATION_TABLE'),
             migrations: ['migration/*.ts'],
             cli: {
