@@ -32,7 +32,7 @@ export class User extends BaseEntity {
     @Column('timestamp')
     createdDate: string;
 
-    @Column()
+    @Column({ default: 'false' })
     deleted: boolean;
 
     @OneToMany(type => ProduceEntity, produceEntity => produceEntity.user)
@@ -43,4 +43,8 @@ export class User extends BaseEntity {
 
     @OneToMany(type => LocationEntity, locationEntity => locationEntity.user)
     location: LocationEntity[];
+
+    isDeleted(): boolean {
+      return this.deleted;
+    }
 }

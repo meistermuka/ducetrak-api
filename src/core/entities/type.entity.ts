@@ -10,6 +10,13 @@ export class Type extends BaseEntity {
     @Column()
     name: string;
 
+    @Column({default: 'false'})
+    deleted: boolean;
+
     @OneToMany(type => ProduceEntity, produceEntity => produceEntity.type)
     produce: ProduceEntity[];
+
+    isDeleted(): boolean {
+      return this.deleted;
+    }
 }

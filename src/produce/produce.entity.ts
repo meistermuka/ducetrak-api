@@ -23,6 +23,9 @@ export class Produce extends BaseEntity {
     @Column('timestamp')
     modifiedDate: string;
 
+    @Column({ default: 'false'})
+    deleted: boolean;
+
     @ManyToOne(type => LocationEntity, locationEntity => locationEntity.produce)
     location: LocationEntity;
 
@@ -31,4 +34,8 @@ export class Produce extends BaseEntity {
 
     @ManyToOne(type => UserEntity, userEntity => userEntity.produce)
     user: UserEntity;
+
+    isDeleted(): boolean {
+      return this.deleted;
+    }
 }

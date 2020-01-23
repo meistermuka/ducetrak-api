@@ -1,4 +1,8 @@
-import { BadRequestException, Body, Controller, Delete, Get, Post, Put, Param } from '@nestjs/common';
+import { isEmpty } from 'lodash';
+
+import {
+  BadRequestException, NotFoundException, Body, Controller, Delete, Get, Post, Put, Param
+} from '@nestjs/common';
 
 import { UserDto } from './user.dto';
 import { UserService } from './user.service';
@@ -12,7 +16,11 @@ export class UserController {
     @Get(':userName')
     async getUser(@Param('userName') userName: string): Promise<User> {
       try {
-        return await this.userService.getUser(userName);
+        const user = await this.userService.getUser(userName);
+        if(isEmpty(user)) {
+          throw new NotFoundException();
+        }
+        return user;
       } catch (err) {
         console.log(err);
         throw new BadRequestException();
@@ -20,7 +28,7 @@ export class UserController {
     }
 
     @Post()
-    async createUser(@Body() userDto: UserDto) {
+    async createUser(@Body() userDto: UserDto): Promise<void> {
       try {
         await this.userService.createUser(userDto);
       } catch (err) {

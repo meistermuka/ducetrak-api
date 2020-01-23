@@ -22,6 +22,10 @@ export class Price extends BaseEntity {
     @Column('timestamp')
     createdDate: string;
 
-    @Column()
+    @Column({ default: 'true' })
     active: boolean;
+
+    isActive(): boolean {
+      return this.active;
+    }
 }

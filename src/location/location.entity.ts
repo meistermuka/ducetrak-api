@@ -18,9 +18,16 @@ export class Location extends BaseEntity {
     @Column('text')
     coordinates: string;
 
+    @Column({ default: 'false'})
+    deleted: boolean;
+
     @OneToMany(type => ProduceEntity, produceEntity => produceEntity.location)
     produce: ProduceEntity[];
 
     @ManyToOne(type => UserEntity, userEntity => userEntity.location)
     user: UserEntity;
+
+    isDeleted(): boolean {
+      return this.deleted;
+    }
 }

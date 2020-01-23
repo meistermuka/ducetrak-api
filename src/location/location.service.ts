@@ -24,11 +24,34 @@ export class LocationService {
         location.address = locationDto.address;
         location.coordinates = locationDto.coordinates;
         const user = await User.findOne({ id: locationDto.user });
-        
+
         if (isEmpty(user)) {
             throw new Error('No User Found');
         }
         location.user = user;
-        location.save();
+        await location.save();
+    }
+
+    async updateLocation(id: number, locationDto: LocationDto): Promise<Location> {
+      const location = await Location.findOne({ id });
+
+      if(location.isDeleted()) {
+        throw new Error('Location not found');
+      }
+      location.name = locationDto.name;
+      location.address = locationDto.address;
+      location.coordinates = locationDto.coordinates;
+      await location.save();
+
+      return location;
+    }
+
+    async deleteLocation(id: number): Promise<void> {
+      const location = await Location.findOne({ id });
+      if(location.isDeleted()) {
+        throw new Error('Location already deleted');
+      }
+      location.deleted = true;
+      await location.save();
     }
 }

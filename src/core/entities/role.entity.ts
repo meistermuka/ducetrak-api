@@ -1,4 +1,4 @@
-import { BaseEntity, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { BaseEntity, Entity, OneToMany, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 import { User as UserEntity } from '../../user/user.entity';
 
@@ -8,8 +8,16 @@ export class Role extends BaseEntity {
     @PrimaryGeneratedColumn()
     id: number;
 
+    @Column()
     role: string;
+
+    @Column({ default: 'false'})
+    deleted: boolean;
 
     @OneToMany(type => UserEntity, userEntity => userEntity.role)
     user: UserEntity[]
+
+    isDeleted(): boolean {
+      return this.deleted;
+    }
 }
