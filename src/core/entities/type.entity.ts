@@ -1,22 +1,20 @@
-import { BaseEntity, PrimaryGeneratedColumn, Column, OneToMany, Entity } from 'typeorm';
+import { PrimaryGeneratedColumn, Column, OneToMany, Entity } from 'typeorm';
 import { Produce as ProduceEntity } from '../../produce/produce.entity';
+import { CommonEntity } from '../../shared/common.entity';
 
 @Entity()
-export class Type extends BaseEntity {
+export class Type extends CommonEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  constructor() {
+    super();
+  }
 
-    @Column()
-    name: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({default: 'false'})
-    deleted: boolean;
+  @Column()
+  name: string;
 
-    @OneToMany(type => ProduceEntity, produceEntity => produceEntity.type)
-    produce: ProduceEntity[];
-
-    isDeleted(): boolean {
-      return this.deleted;
-    }
+  @OneToMany(type => ProduceEntity, produceEntity => produceEntity.type)
+  produce: ProduceEntity[];
 }
