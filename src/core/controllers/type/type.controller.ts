@@ -38,7 +38,7 @@ export class TypeController {
     }
 
     @Delete(':name')
-    async deleteType(@Param('name') name: string): Promise<void> {
-      await this.typeService.deleteType(name);
+    async deleteType(@Param('name') name: string): Promise<Type> {
+      return await this.typeService.deleteType(name);
     }
 }
