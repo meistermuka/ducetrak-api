@@ -6,7 +6,7 @@ import { Repository } from 'typeorm';
 import { Type } from '../../../core/entities/type.entity';
 import {
   NoTypeFoundError, NoTypesFoundError, TypeAlreadyDeleted
-} from './type.errors';
+} from '../../../shared';
 import { TypeDto } from '../../dto/type.dto';
 import { allDeleted } from '../../../shared/utils';
 

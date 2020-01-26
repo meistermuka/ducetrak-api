@@ -3,7 +3,7 @@ import { getRepositoryToken } from '@nestjs/typeorm';
 import { TypeService } from './type.service';
 import {
   NoTypeFoundError, NoTypesFoundError, TypeAlreadyDeleted
-} from './type.errors';
+} from '../../../shared';
 import { Type as TypeEntity } from '../../entities/type.entity';
 
 const mockSimple = () => {
