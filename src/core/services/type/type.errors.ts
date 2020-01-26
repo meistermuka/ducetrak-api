@@ -8,6 +8,16 @@ class NoTypeFoundError extends Error {
   }
 }
 
+class NoTypesFoundError extends Error {
+  constructor(...args) {
+    super(...args);
+
+    this.message = 'No Types Found';
+    this.name = 'NoTypesFoundError';
+    this.stack = `${this.message}\n${new Error().stack}`;
+  }
+}
+
 class TypeAlreadyDeleted extends Error {
   constructor(...args) {
     super(...args);
@@ -20,5 +30,6 @@ class TypeAlreadyDeleted extends Error {
 
 export {
   NoTypeFoundError,
+  NoTypesFoundError,
   TypeAlreadyDeleted,
  };
