@@ -5,7 +5,7 @@ import { Repository } from 'typeorm';
 
 import { Type } from '../../../core/entities/type.entity';
 import {
-  NoTypeFoundError, NoTypesFoundError, TypeAlreadyDeleted
+  NoTypeFoundError, NoTypesFoundError, TypeAlreadyDeletedError
 } from '../../../shared';
 import { TypeDto } from '../../dto/type.dto';
 import { allDeleted } from '../../../shared/utils';
@@ -49,7 +49,7 @@ export class TypeService {
   async deleteType(name: string): Promise<Type> {
     const type = await this.typeRepository.findOne({ name });
     if(type.isDeleted()) {
-      throw new TypeAlreadyDeleted();
+      throw new TypeAlreadyDeletedError();
     }
     type.deleted = true;
     return await this.typeRepository.save(type);

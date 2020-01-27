@@ -1,23 +1,21 @@
-import { BaseEntity, Entity, OneToMany, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Entity, OneToMany, PrimaryGeneratedColumn, Column } from 'typeorm';
 
 import { User as UserEntity } from '../../user/user.entity';
+import { CommonEntity } from '../../shared/common.entity';
 
 @Entity()
-export class Role extends BaseEntity {
+export class Role extends CommonEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  constructor() {
+    super();
+  }
 
-    @Column()
-    role: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column({ default: 'false'})
-    deleted: boolean;
+  @Column()
+  role: string;
 
-    @OneToMany(type => UserEntity, userEntity => userEntity.role)
-    user: UserEntity[]
-
-    isDeleted(): boolean {
-      return this.deleted;
-    }
+  @OneToMany(type => UserEntity, userEntity => userEntity.role)
+  user: UserEntity[];
 }

@@ -4,3 +4,4 @@
 .vscode/
 nodemon.json
 nest-cli.json
+/coverage

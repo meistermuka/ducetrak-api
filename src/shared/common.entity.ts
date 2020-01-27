@@ -1,6 +1,6 @@
 import { Column } from 'typeorm';
 
-export class CommonEntity {
+class CommonEntity {
 
   @Column({default: 'false'})
   deleted: boolean;
@@ -9,3 +9,5 @@ export class CommonEntity {
     return this.deleted;
   }
 }
+
+export { CommonEntity };

@@ -1,58 +1,71 @@
-import { isEmpty } from 'lodash';
-
 import {
-  BadRequestException, NotFoundException, Body, Controller, Delete, Get, Post, Put, Param
+  BadRequestException, Body, Controller, Delete, Get, Post,
+  Put, Param, UseInterceptors, ClassSerializerInterceptor
 } from '@nestjs/common';
 
 import { UserDto } from './user.dto';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 
+/*
+  The @UseInterceptors(ClassSerializerInterceptor) decorator is used
+  to exclude properties we don't want to share with the caller.
+  Here we are excluding password and id. See User entity definition
+*/
+@UseInterceptors(ClassSerializerInterceptor)
 @Controller('users')
 export class UserController {
 
-    constructor(private userService: UserService) {}
+  constructor(private userService: UserService) {}
 
-    @Get(':userName')
-    async getUser(@Param('userName') userName: string): Promise<User> {
-      try {
-        const user = await this.userService.getUser(userName);
-        if(isEmpty(user)) {
-          throw new NotFoundException();
-        }
-        return user;
-      } catch (err) {
-        console.log(err);
-        throw new BadRequestException();
-      }
+  @Get()
+  async getAllUsers(): Promise<User[]> {
+    try {
+      return await this.userService.getAllUsers();
+    } catch (err) {
+      // TODO: Proper logging of errors
+      console.log(err);
+      throw new BadRequestException();
     }
+  }
 
-    @Post()
-    async createUser(@Body() userDto: UserDto): Promise<void> {
-      try {
-        await this.userService.createUser(userDto);
-      } catch (err) {
-        console.log(err);
-        throw new BadRequestException();
-      }
+  @Get(':userName')
+  async getUser(@Param('userName') userName: string): Promise<User> {
+    try {
+      return await this.userService.getUser(userName);
+    } catch (err) {
+      console.log(err);
+      throw new BadRequestException();
     }
+  }
 
-    @Put(':id')
-    updateUser() {}
-
-    @Delete(':userName')
-    async deleteUser(@Param('userName') userName: string): Promise<void> {
-      try {
-        await this.userService.deleteUser(userName);
-      } catch (err) {
-        console.log(err);
-        throw new BadRequestException();
-      }
+  @Post()
+  async createUser(@Body() userDto: UserDto): Promise<User> {
+    try {
+      return await this.userService.createUser(userDto);
+    } catch (err) {
+      console.log(err);
+      throw new BadRequestException();
     }
+  }
 
-    @Post('/auth/login')
-    login(): void {}
+  @Put(':username')
+  async updateUser(@Param('username') username: string, @Body() userDto: UserDto): Promise<User> {
+    try {
+      return await this.userService.updateUser(username, userDto);
+    } catch (err) {
+      console.log(err);
+      throw new BadRequestException();
+    }
+  }
 
-    @Post('/auth/logout')
-    logout(): void {}
+  @Delete(':userName')
+  async deleteUser(@Param('userName') userName: string): Promise<User> {
+    try {
+      return await this.userService.deleteUser(userName);
+    } catch (err) {
+      console.log(err);
+      throw new BadRequestException();
+    }
+  }
 }

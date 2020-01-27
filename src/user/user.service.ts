@@ -1,5 +1,8 @@
-import { sha256 } from 'js-sha256';
+import * as crypto from 'crypto';
 import { isEmpty } from 'lodash';
+
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { Injectable } from '@nestjs/common';
 
@@ -7,56 +10,96 @@ import { Role } from '../core/entities/role.entity';
 import { ConfigService } from '../core/services';
 import { UserDto } from './user.dto';
 import { User } from './user.entity';
+import {
+  UserExistsError, NoValidRoleError, NoUserFoundError, InvalidUpdateFieldsError
+} from '../shared';
 
 @Injectable()
 export class UserService {
 
-    constructor(private configService: ConfigService) { }
+  constructor(
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Role) private readonly roleRepository: Repository<Role>,
+    private configService: ConfigService
+  ) { }
 
-    async createUser(userDto: UserDto): Promise<void> {
-        const user = new User();
-        user.userName = userDto.username;
-        user.firstName = userDto.firstName;
-        user.lastName = userDto.lastName;
-        user.email = userDto.email;
-        user.createdDate = new Date().toISOString();
-        user.password = this.hashPassword(userDto.password);
+  async createUser(userDto: UserDto): Promise<User> {
 
-        const role = await Role.findOne({ id: userDto.role });
-        if (isEmpty(role)) {
-            throw new Error('No valid role found');
-        }
-        user.role = role;
-
-        await user.save();
+    const existingUser = await this.userRepository.findOne({ where: { userName: userDto.username }});
+    if(!isEmpty(existingUser)) {
+      throw new UserExistsError();
     }
 
-    private async _getUser(userName: string): Promise<User> {
-      const user = await User.find({ where: { userName, deleted: false }});
-      if(isEmpty(user)) {
-        throw new Error('No user found');
-      }
-      return user[0];
+    const createAndUpdateDate = new Date().toISOString();
+    const user = new User({
+      username: userDto.username,
+      firstName: userDto.firstName,
+      lastName: userDto.lastName,
+      email: userDto.email,
+      createdDate: createAndUpdateDate,
+      updatedDate: createAndUpdateDate,
+      password: this.hashPassword(userDto.password),
+      role: await this._getUserRole(userDto.role),
+    });
+    return await this.userRepository.save(user);
+  }
+
+  private async _getUser(userName: string): Promise<User> {
+    const user = await this.userRepository.findOne({ where: { userName }});
+    if(isEmpty(user) || user.isDeleted()) {
+      throw new NoUserFoundError();
+    }
+    return user;
+  }
+
+  private async _getUserRole(id: number): Promise<Role> {
+    const role = await this.roleRepository.findOne({ id });
+
+    if (isEmpty(role) || role.isDeleted()) {
+      throw new NoValidRoleError();
     }
 
-    async getUser(userName: string): Promise<User> {
-      return await this._getUser(userName);
+    return role;
+  }
+
+  async getUser(userName: string): Promise<User> {
+    return await this._getUser(userName);
+  }
+
+  async getAllUsers(): Promise<User[]> {
+    return await this.userRepository.find({relations: ['role']});
+  }
+
+  async updateUser(username: string, userDto: UserDto): Promise<User> {
+    const user = await this._getUser(username);
+    const updateableFields = ['firstName', 'lastName', 'email', 'password', 'role'];
+    const userDtoKeys = Object.keys(userDto);
+    const invalidFields = userDtoKeys.filter(key => !updateableFields.includes(key));
+
+    if(invalidFields.length) {
+      throw new InvalidUpdateFieldsError(invalidFields);
     }
 
-    async updateUser(): Promise<void> {}
-
-    async deleteUser(userName: string): Promise<void> {
-      const user = await this._getUser(userName);
-      user.deleted = true;
-      await user.save();
-
+    if(userDtoKeys.includes('password')) {
+      userDto.password = this.hashPassword(userDto.password);
     }
 
-    async loginUser(): Promise<void> {}
+    Object.assign(user, userDto);
 
-    async logoutUser(): Promise<void> {}
+    return await this.userRepository.save(user);
+  }
 
-    private hashPassword(password: string): string {
-        return sha256.hmac(this.configService.get('HMAC_KEY'), password);
-    }
+  async deleteUser(userName: string): Promise<User> {
+    const user = await this._getUser(userName);
+    user.deleted = true;
+    user.updatedDate = new Date().toISOString();
+    return await this.userRepository.save(user);
+  }
+
+  private hashPassword(password: string): string {
+    return crypto
+          .createHmac('sha256', this.configService.get('HMAC_KEY'))
+          .update(password)
+          .digest('hex');
+  }
 }
