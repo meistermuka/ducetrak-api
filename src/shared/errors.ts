@@ -1,3 +1,13 @@
+class NoLocationFoundError extends Error {
+  constructor(customMessage = 'No Location Found', ...args) {
+    super(...args);
+
+    this.message = customMessage;
+    this.name = 'NoLocationFoundError';
+    this.stack = `${this.message}\n${new Error().stack}`;
+  }
+}
+
 class NoUserFoundError extends Error {
   constructor(...args) {
     super(...args);
@@ -72,6 +82,7 @@ export {
   InvalidUpdateFieldsError,
   NoUserFoundError,
   UserExistsError,
+  NoLocationFoundError,
   NoValidRoleError,
   NoTypeFoundError,
   NoTypesFoundError,

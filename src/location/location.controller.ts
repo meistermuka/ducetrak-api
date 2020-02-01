@@ -32,11 +32,7 @@ export class LocationController {
     @Get(':id')
     async getLocation(@Param('id') id: number): Promise<Location> {
       try {
-        const location =  await this.locationService.getLocation(id);
-        if(location.isDeleted() || isEmpty(location)) {
-            throw new NotFoundException();
-        }
-        return location;
+        return await this.locationService.getLocation(id);
       } catch (err) {
         console.log(err);
         throw new BadRequestException();
@@ -64,10 +60,11 @@ export class LocationController {
     }
 
     @Post()
-    async postLocation(@Body() locationDto: LocationDto​​): Promise<void> {
+    async postLocation(@Body() locationDto: LocationDto​​): Promise<Location> {
       try {
-        await this.locationService.postLocation(locationDto);
-      } catch (e) {
+        return await this.locationService.postLocation(locationDto);
+      } catch (err) {
+        console.log(err);
         throw new BadRequestException();
       }
     }

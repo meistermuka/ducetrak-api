@@ -40,12 +40,6 @@ export class User extends CommonEntity {
   @ManyToOne(type => RoleEntity, roleEntity => roleEntity.user)
   role: RoleEntity;
 
-  @Column('timestamp')
-  createdDate: string;
-
-  @Column('timestamp')
-  updatedDate: string;
-
   @OneToMany(type => ProduceEntity, produceEntity => produceEntity.user)
   produce: ProduceEntity[];
 
@@ -54,10 +48,5 @@ export class User extends CommonEntity {
 
   @OneToMany(type => LocationEntity, locationEntity => locationEntity.user)
   location: LocationEntity[];
-
-  @BeforeUpdate()
-  updateDates() {
-    this.updatedDate = new Date().toISOString();
-  }
 
 }

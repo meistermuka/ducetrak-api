@@ -92,7 +92,6 @@ export class UserService {
   async deleteUser(userName: string): Promise<User> {
     const user = await this._getUser(userName);
     user.deleted = true;
-    user.updatedDate = new Date().toISOString();
     return await this.userRepository.save(user);
   }
 

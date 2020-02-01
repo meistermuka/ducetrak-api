@@ -1,33 +1,33 @@
-import { BaseEntity, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn
+} from 'typeorm';
 
 import { Produce as ProduceEntity } from '../produce/produce.entity';
 import { User as UserEntity } from '../user/user.entity';
+import { CommonEntity } from '../shared';
 
 @Entity()
-export class Location extends BaseEntity {
+export class Location extends CommonEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  constructor() {
+    super();
+  }
 
-    @Column('text')
-    name: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column('text')
-    address: string;
+  @Column('text')
+  name: string;
 
-    @Column('text')
-    coordinates: string;
+  @Column('text')
+  address: string;
 
-    @Column({ default: 'false'})
-    deleted: boolean;
+  @Column('text')
+  coordinates: string;
 
-    @OneToMany(type => ProduceEntity, produceEntity => produceEntity.location)
-    produce: ProduceEntity[];
+  @OneToMany(type => ProduceEntity, produceEntity => produceEntity.location)
+  produce: ProduceEntity[];
 
-    @ManyToOne(type => UserEntity, userEntity => userEntity.location)
-    user: UserEntity;
-
-    isDeleted(): boolean {
-      return this.deleted;
-    }
+  @ManyToOne(type => UserEntity, userEntity => userEntity.location)
+  user: UserEntity;
 }
