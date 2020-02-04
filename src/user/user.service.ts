@@ -32,7 +32,7 @@ export class UserService {
 
     const createAndUpdateDate = new Date().toISOString();
     const user = new User({
-      username: userDto.username,
+      userName: userDto.username,
       firstName: userDto.firstName,
       lastName: userDto.lastName,
       email: userDto.email,

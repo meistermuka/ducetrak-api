@@ -15,7 +15,7 @@ export class RolesAndRoleRelationship1578856384631 implements MigrationInterface
         `),
           queryRunner.query(`INSERT INTO role (role) VALUES ('ADMIN'),('MODERATOR'),('USER'),('GUEST')`),
           queryRunner.query(`ALTER TABLE "user" DROP COLUMN IF EXISTS role`),
-          queryRunner.query(`ALTER TABLE "user" ADD roleId SMALLINT NOT NULL DEFAULT 3`),
+          queryRunner.query(`ALTER TABLE "user" ADD "roleId" SMALLINT NOT NULL DEFAULT 3`),
           queryRunner.query(`ALTER TABLE "user" ADD CONSTRAINT "FK_user_role_id" FOREIGN KEY (roleId) REFERENCES role(id)`)
         ]);
 

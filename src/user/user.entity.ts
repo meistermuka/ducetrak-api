@@ -1,5 +1,5 @@
 import {
-  BeforeUpdate, Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn
+  Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn
 } from 'typeorm';
 import { Exclude } from 'class-transformer';
 
@@ -22,7 +22,7 @@ export class User extends CommonEntity {
   id: number;
 
   @Column({ unique: true })
-  username: string;
+  userName: string;
 
   @Exclude()
   @Column()

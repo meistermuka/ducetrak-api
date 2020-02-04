@@ -7,7 +7,11 @@ import { Repository } from 'typeorm';
 import { User } from '../user/user.entity';
 import { LocationDto } from './location.dto';
 import { Location } from './location.entity';
-import { NoUserFoundError, NoLocationFoundError } from '../shared';
+import {
+  NoUserFoundError, NoLocationFoundError, InvalidUpdateFieldsError
+} from '../shared';
+import { allDeleted } from '../shared/utils';
+
 
 @Injectable()
 export class LocationService {
@@ -17,12 +21,29 @@ export class LocationService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
+  private filterUserRelation(location: Location): void {
+    location.user = new User({
+      id: location.user.id,
+      firstName: location.user.firstName,
+      lastName: location.user.lastName,
+      userName: location.user.userName,
+      email: location.user.email,
+    });
+  }
+
   async getAllLocations(): Promise<Location[]> {
-    return await this.locationRepository.find({ relations: ['user']});
+    const locations = await this.locationRepository.find({ relations: ['user']});
+    if(locations.every(allDeleted) || isEmpty(locations)) {
+      throw new NoLocationFoundError('No Locations Found');
+    }
+    locations.map(location => this.filterUserRelation(location));
+    return locations;
   }
 
   async getLocation(id: number): Promise<Location> {
-    return await this.locationRepository.findOne({ id }, { relations: ['user']});
+    const location = await this.locationRepository.findOne({ id }, { relations: ['user']});
+    this.filterUserRelation(location);
+    return location;
   }
 
   async postLocation(locationDto: LocationDto​​): Promise<Location> {
@@ -36,28 +57,36 @@ export class LocationService {
     if (isEmpty(user) || user.isDeleted()) {
         throw new NoUserFoundError();
     }
-    location.user = user;
+    this.filterUserRelation(location);
     return await this.locationRepository.save(location);
   }
 
   async updateLocation(id: number, locationDto: LocationDto): Promise<Location> {
-    const location = await this.locationRepository.findOne({ id });
+    const location = await this.locationRepository.findOne({ id }, { relations: ['user']});
 
-    if(location.isDeleted()) {
+    if(location.isDeleted() || isEmpty(location)) {
       throw new NoLocationFoundError();
     }
-    location.name = locationDto.name;
-    location.address = locationDto.address;
-    location.coordinates = locationDto.coordinates;
+
+    const updateableFields = ['name', 'address', 'coordinates'];
+    const locationDtoKeys = Object.keys(locationDto);
+    const invalidFields = locationDtoKeys.filter(key => !updateableFields.includes(key));
+
+    if(invalidFields.length) {
+      throw new InvalidUpdateFieldsError(invalidFields);
+    }
+
+    Object.assign(location, locationDto);
+    this.filterUserRelation(location);
     return await this.locationRepository.save(location);
   }
 
-  async deleteLocation(id: number): Promise<void> {
+  async deleteLocation(id: number): Promise<Location> {
     const location = await this.locationRepository.findOne({ id });
     if(location.isDeleted()) {
       throw new NoLocationFoundError('Location already deleted');
     }
     location.deleted = true;
-    await this.locationRepository.save(location);
+    return await this.locationRepository.save(location);
   }
 }

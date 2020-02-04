@@ -4,38 +4,31 @@ import { Type as TypeEntity } from '../core/entities/type.entity';
 import { Location as LocationEntity } from '../location/location.entity';
 import { Price as PriceEntity } from '../price/price.entity';
 import { User as UserEntity } from '../user/user.entity';
+import { CommonEntity } from '../shared';
 
 @Entity()
-export class Produce extends BaseEntity {
+export class Produce extends CommonEntity {
 
-    @PrimaryGeneratedColumn()
-    id: number;
+  constructor() {
+    super();
+  }
 
-    @Column('text')
-    name: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @ManyToOne(type => TypeEntity, typeEntity => typeEntity.produce)
-    type: TypeEntity;
+  @Column('text')
+  name: string;
 
-    @Column('timestamp')
-    createdDate: string;
+  @ManyToOne(type => TypeEntity, typeEntity => typeEntity.produce)
+  type: TypeEntity;
 
-    @Column('timestamp')
-    modifiedDate: string;
+  @ManyToOne(type => LocationEntity, locationEntity => locationEntity.produce)
+  location: LocationEntity;
 
-    @Column({ default: 'false'})
-    deleted: boolean;
+  @OneToMany(type => PriceEntity, priceEntity => priceEntity.produce)
+  price: PriceEntity[];
 
-    @ManyToOne(type => LocationEntity, locationEntity => locationEntity.produce)
-    location: LocationEntity;
+  @ManyToOne(type => UserEntity, userEntity => userEntity.produce)
+  user: UserEntity;
 
-    @OneToMany(type => PriceEntity, priceEntity => priceEntity.produce)
-    price: PriceEntity[];
-
-    @ManyToOne(type => UserEntity, userEntity => userEntity.produce)
-    user: UserEntity;
-
-    isDeleted(): boolean {
-      return this.deleted;
-    }
 }

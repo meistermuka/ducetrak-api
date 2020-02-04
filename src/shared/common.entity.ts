@@ -1,4 +1,4 @@
-import { Column, BeforeUpdate } from 'typeorm';
+import { Column, BeforeUpdate, BeforeInsert } from 'typeorm';
 
 class CommonEntity {
 
@@ -13,6 +13,13 @@ class CommonEntity {
 
   isDeleted(): boolean {
     return this.deleted;
+  }
+
+  @BeforeInsert()
+  createDates() {
+    const date = new Date().toISOString();
+    this.createdDate = date;
+    this.updatedDate = date;
   }
 
   @BeforeUpdate()

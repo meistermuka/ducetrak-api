@@ -1,6 +1,8 @@
 import { isEmpty } from 'lodash';
 
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { Type } from '../core/entities/type.entity';
 import { Location } from '../location/location.entity';
@@ -12,89 +14,97 @@ import { Produce } from './produce.entity';
 @Injectable()
 export class ProduceService {
 
-    constructor(private priceService: PriceService) {}
+  constructor(
+    private priceService: PriceService,
+    @InjectRepository(Location) private readonly locationRepository: Repository<Location>,
+    @InjectRepository(Produce) private readonly produceRepository: Repository<Produce>,
+    @InjectRepository(User) private readonly userRepository: Repository<User>,
+    @InjectRepository(Type) private readonly typeRepository: Repository<Type>,
+  ) {}
 
-    async getProduce(id: number): Promise<Produce> {
-      return await Produce.findOne({ id }, { relations: ['location', 'user', 'type', 'price'] });
+  async getProduce(id: number): Promise<Produce> {
+    const produce = await this.produceRepository.findOne({ id }, { relations: ['location', 'user', 'type', 'price'] });
+    if(produce.isDeleted || isEmpty(produce)) {
+      throw new Error('No Produce Found');
+    }
+    return produce;
+  }
+
+  async getAllProduce(): Promise<Produce[]> {
+    return await this.produceRepository.find({ relations: ['location', 'user', 'type', 'price'] });
+  }
+
+  private async createOrUpdateProduce(produce: Produce, produceDto: ProduceDto): Promise<void> {
+    produce.name = produceDto.name;
+
+    if(!isEmpty(produceDto.location)) {
+      const location = await this.locationRepository.findOne({ id: produceDto.location });
+      if(isEmpty(location)) {
+          throw new Error('No Location Found');
+      }
+      produce.location = location;
     }
 
-    async getAllProduce(): Promise<Produce[]> {
-      return await Produce.find({ relations: ['location', 'user', 'type'] });
+    if(!isEmpty(produceDto.user)) {
+      const user = await this.userRepository.findOne({ id: produceDto.user });
+      if(isEmpty(user)) {
+          throw new Error('No User Found');
+      }
+      produce.user = user;
     }
 
-    private async createOrUpdateProduce(produce: Produce, produceDto: ProduceDto): Promise<void> {
-      produce.name = produceDto.name;
-
-      if(!isEmpty(produceDto.location)) {
-        const location = await Location.findOne({ id: produceDto.location });
-        if(isEmpty(location)) {
-            throw new Error('No Location Found');
-        }
-        produce.location = location;
+    if(!isEmpty(produceDto.type)) {
+      const type = await this.typeRepository.findOne({ id: produceDto.type });
+      if(isEmpty(type)) {
+          throw new Error('No Type Found');
       }
+      produce.type = type;
+    }
+  }
 
-      if(!isEmpty(produceDto.user)) {
-        const user = await User.findOne({ id: produceDto.user });
-        if(isEmpty(user)) {
-            throw new Error('No User Found');
-        }
-        produce.user = user;
-      }
+  async postProduce(produceDto: ProduceDto): Promise<void> {
+    const produce = new Produce();
 
-      if(!isEmpty(produceDto.type)) {
-        const type = await Type.findOne({ id: produceDto.type });
-        if(isEmpty(type)) {
-            throw new Error('No Type Found');
-        }
-        produce.type = type;
-      }
+    await this.createOrUpdateProduce(produce, produceDto);
+
+    const insertedProduce = await this.produceRepository.save(produce);
+
+    const produceId = insertedProduce.id;
+    const user = insertedProduce.user;
+
+    if (isEmpty(produceDto.price)) {
+        throw new Error('No Price Found');
     }
 
-    async postProduce(produceDto: ProduceDto): Promise<void> {
-      const produce = new Produce();
+    try {
+      await this.priceService.postPrice(produceId, user, produceDto.price);
+    } catch (e) {
+      console.log(e);
+    }
 
-      await this.createOrUpdateProduce(produce, produceDto);
+  }
 
-      produce.createdDate = new Date().toISOString();
-      produce.modifiedDate = new Date().toISOString();
+  async updateProduce(id: number, produceDto: ProduceDto): Promise<Produce> {
+    const produce = await this.produceRepository.findOne({ id }, { relations: ['location', 'user', 'type'] });
+    await this.createOrUpdateProduce(produce, produceDto);
 
-      const insertedProduce = await produce.save();
-
-      const produceId = insertedProduce.id;
-      const user = insertedProduce.user;
-
-      if (isEmpty(produceDto.price)) {
-          throw new Error('No Price Found');
-      }
-
+    if(!isEmpty(produceDto.price)) {
       try {
-        await this.priceService.postPrice(produceId, user, produceDto.price);
+        await this.priceService.updatePrice(id, produce.user, produceDto.price);
       } catch (e) {
         console.log(e);
+        throw new Error('Update Price Failed');
       }
-
     }
+    return await this.produceRepository.save(produce);
+  }
 
-    async updateProduce(id: number, produceDto: ProduceDto): Promise<void> {
-      const produce = await Produce.findOne({ id }, { relations: ['location', 'user', 'type'] });
-      await this.createOrUpdateProduce(produce, produceDto);
-      produce.modifiedDate = new Date().toISOString();
-
-      if(!isEmpty(produceDto.price)) {
-        try {
-          await this.priceService.updatePrice(id, produce.user, produceDto.price);
-        } catch (e) {
-          console.log(e);
-        }
-      }
-      produce.save();
+  async deleteProduce(id: number): Promise<Produce> {
+    const produce = await this.produceRepository.findOne({id})
+    if(isEmpty(produce)) {
+      throw new Error('No Produce Found');
     }
-
-    async deleteProduce(id: number): Promise<void> {
-      const produce = await Produce.findOne({id})
-      if(isEmpty(produce)) {
-        throw new Error('No Produce Found');
-      }
-      await Produce.delete({ id });
-    }
+    produce.deleted = true;
+    return await this.produceRepository.save(produce);
+  }
 }
