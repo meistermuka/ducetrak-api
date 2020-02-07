@@ -8,12 +8,14 @@ import { UserModule } from './user/user.module';
 import { PriceModule } from './price/price.module';
 import { CoreModule } from './core/core.module';
 import { ConfigService } from './core/services/config/config.service';
+import { AuthModule } from './auth/auth.module';
+
 @Module({
   imports: [TypeOrmModule.forRootAsync({
     imports: [CoreModule],
     inject: [ConfigService],
     useFactory: async (config: ConfigService) => (config.getTypeOrmConfig()),
-  }), ProduceModule, LocationModule, UserModule, PriceModule, CoreModule],
+  }), ProduceModule, LocationModule, UserModule, PriceModule, CoreModule, AuthModule],
   controllers: [AppController],
   providers: [AppService],
 })

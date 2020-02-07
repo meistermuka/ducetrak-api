@@ -95,7 +95,7 @@ export class UserService {
     return await this.userRepository.save(user);
   }
 
-  private hashPassword(password: string): string {
+  hashPassword(password: string): string {
     return crypto
           .createHmac('sha256', this.configService.get('HMAC_KEY'))
           .update(password)
