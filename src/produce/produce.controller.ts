@@ -32,9 +32,9 @@ export class ProduceController {
   }
 
   @Post()
-  async postProduce(@Body() produceDto: ProduceDto): Promise<void> {
+  async postProduce(@Body() produceDto: ProduceDto): Promise<Produce> {
     try {
-      await this.produceService.postProduce(produceDto);
+      return await this.produceService.postProduce(produceDto);
     } catch (e) {
       console.log(e);
       throw new BadRequestException();

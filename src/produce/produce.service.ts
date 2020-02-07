@@ -10,6 +10,10 @@ import { PriceService } from '../price/price.service';
 import { User } from '../user/user.entity';
 import { ProduceDto } from './produce.dto';
 import { Produce } from './produce.entity';
+import {
+  filterUserRelation, RequiredFieldsError, NoLocationFoundError, NoUserFoundError,
+  NoTypeFoundError, NoPriceFoundError, UpdatePriceError, NoProduceFoundError
+} from '../shared';
 
 @Injectable()
 export class ProduceService {
@@ -22,12 +26,16 @@ export class ProduceService {
     @InjectRepository(Type) private readonly typeRepository: Repository<Type>,
   ) {}
 
-  async getProduce(id: number): Promise<Produce> {
+  private async _getProduce(id: number): Promise<Produce> {
     const produce = await this.produceRepository.findOne({ id }, { relations: ['location', 'user', 'type', 'price'] });
-    if(produce.isDeleted || isEmpty(produce)) {
+    if(produce.isDeleted() || isEmpty(produce)) {
       throw new Error('No Produce Found');
     }
     return produce;
+  }
+
+  async getProduce(id: number): Promise<Produce> {
+    return await this._getProduce(id);
   }
 
   async getAllProduce(): Promise<Produce[]> {
@@ -35,35 +43,47 @@ export class ProduceService {
   }
 
   private async createOrUpdateProduce(produce: Produce, produceDto: ProduceDto): Promise<void> {
-    produce.name = produceDto.name;
 
-    if(!isEmpty(produceDto.location)) {
+    if(Number.isInteger(produceDto.location)) {
       const location = await this.locationRepository.findOne({ id: produceDto.location });
       if(isEmpty(location)) {
-          throw new Error('No Location Found');
+          throw new NoLocationFoundError();
       }
       produce.location = location;
     }
 
-    if(!isEmpty(produceDto.user)) {
+    if(Number.isInteger(produceDto.user)) {
       const user = await this.userRepository.findOne({ id: produceDto.user });
       if(isEmpty(user)) {
-          throw new Error('No User Found');
+          throw new NoUserFoundError();
       }
       produce.user = user;
     }
 
-    if(!isEmpty(produceDto.type)) {
+    if(Number.isInteger(produceDto.type)) {
       const type = await this.typeRepository.findOne({ id: produceDto.type });
       if(isEmpty(type)) {
-          throw new Error('No Type Found');
+          throw new NoTypeFoundError();
       }
       produce.type = type;
     }
   }
 
-  async postProduce(produceDto: ProduceDto): Promise<void> {
+  async postProduce(produceDto: ProduceDto): Promise<Produce> {
     const produce = new Produce();
+    const requiredFields = ['type', 'user', 'location', 'name', 'price'];
+    const produceDtoKeys = Object.keys(produceDto);
+    const missingFields = produceDtoKeys.filter(key => !requiredFields.includes(key));
+
+    if(isEmpty(produceDto)) {
+      throw new RequiredFieldsError(requiredFields);
+    }
+
+    if(missingFields.length) {
+      throw new RequiredFieldsError(missingFields);
+    }
+
+    produce.name = produceDto.name;
 
     await this.createOrUpdateProduce(produce, produceDto);
 
@@ -73,7 +93,7 @@ export class ProduceService {
     const user = insertedProduce.user;
 
     if (isEmpty(produceDto.price)) {
-        throw new Error('No Price Found');
+      throw new NoPriceFoundError();
     }
 
     try {
@@ -82,6 +102,9 @@ export class ProduceService {
       console.log(e);
     }
 
+    const newProduce = await this._getProduce(produceId);
+    filterUserRelation(newProduce);
+    return newProduce;
   }
 
   async updateProduce(id: number, produceDto: ProduceDto): Promise<Produce> {
@@ -93,16 +116,18 @@ export class ProduceService {
         await this.priceService.updatePrice(id, produce.user, produceDto.price);
       } catch (e) {
         console.log(e);
-        throw new Error('Update Price Failed');
+        throw new UpdatePriceError();
       }
     }
-    return await this.produceRepository.save(produce);
+    const updatedProduce = await this.produceRepository.save(produce);
+    filterUserRelation(updatedProduce);
+    return updatedProduce;
   }
 
   async deleteProduce(id: number): Promise<Produce> {
     const produce = await this.produceRepository.findOne({id})
     if(isEmpty(produce)) {
-      throw new Error('No Produce Found');
+      throw new NoProduceFoundError();
     }
     produce.deleted = true;
     return await this.produceRepository.save(produce);

@@ -1,4 +1,6 @@
 import { Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
 
 import { Produce } from '../produce/produce.entity';
 import { User } from '../user/user.entity';
@@ -8,32 +10,31 @@ import { Price } from './price.entity';
 @Injectable()
 export class PriceService {
 
-    async postPrice(produceId: number, user: User, priceDto: PriceDto): Promise<void> {
-        const price = new Price();
-        price.produce = await Produce.findOne({ id: produceId });
-        price.price = priceDto.price;
-        price.unit = priceDto.unit;
-        price.user = user;
-        price.createdDate = new Date().toISOString();
-        price.active = true;
+  constructor(
+    @InjectRepository(Produce) private readonly produceRepository: Repository<Produce>,
+    @InjectRepository(Price) private readonly priceRepository: Repository<Price>) {}
 
-        await price.save();
-    }
+  async postPrice(produceId: number, user: User, priceDto: PriceDto): Promise<Price> {
+    const price = new Price();
+    price.produce = await this.produceRepository.findOne({ id: produceId });
+    price.price = priceDto.price;
+    price.unit = priceDto.unit;
+    price.user = user;
 
-    async updatePrice(produceId: number, user: User, priceDto: PriceDto): Promise<void> {
-        const price = new Price();
-        const produce = await Produce.findOne({ id: produceId}, { relations: ['price']});
-        const oldPrice = await Price.findOne({ id: produce.price[0].id });
-        oldPrice.active = false;
-        await oldPrice.save();
+    return await this.priceRepository.save(price);
+  }
 
-        price.produce = produce;
-        price.price = priceDto.price;
-        price.unit = priceDto.unit;
-        price.user = user;
-        price.createdDate = new Date().toISOString();
-        price.active = true;
+  async updatePrice(produceId: number, user: User, priceDto: PriceDto): Promise<Price> {
+    const price = new Price();
+    const produce = await this.produceRepository.findOne({ id: produceId}, { relations: ['price']});
+    const oldPrice = await this.priceRepository.findOne({ id: produce.price[0].id });
+    oldPrice.deleted = true;
+    await this.priceRepository.save(oldPrice);
 
-        await price.save();
-    }
+    price.produce = produce;
+    price.price = priceDto.price;
+    price.unit = priceDto.unit;
+    price.user = user;
+    return await this.priceRepository.save(price);
+  }
 }

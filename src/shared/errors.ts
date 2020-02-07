@@ -1,9 +1,48 @@
+class RequiredFieldsError extends Error {
+  constructor(requiredFields: string[] , ...args) {
+    super(...args);
+
+    this.message = `Missing Required Fields: ${requiredFields}`;
+    this.name = 'RequiredFieldsError';
+    this.stack = `${this.message}\n${new Error().stack}`;
+  }
+}
+
+class UpdatePriceError extends Error {
+  constructor(...args) {
+    super(...args);
+
+    this.message = 'Update Price Failed';
+    this.name = 'UpdatePriceError';
+    this.stack = `${this.message}\n${new Error().stack}`;
+  }
+}
+class NoPriceFoundError extends Error {
+  constructor(...args) {
+    super(...args);
+
+    this.message = 'No Price Found';
+    this.name = 'NoPriceFoundError';
+    this.stack = `${this.message}\n${new Error().stack}`;
+  }
+}
+
 class NoLocationFoundError extends Error {
   constructor(customMessage = 'No Location Found', ...args) {
     super(...args);
 
     this.message = customMessage;
     this.name = 'NoLocationFoundError';
+    this.stack = `${this.message}\n${new Error().stack}`;
+  }
+}
+
+class NoProduceFoundError extends Error {
+  constructor(...args) {
+    super(...args);
+
+    this.message = 'No Produce Found';
+    this.name = 'NoProduceFoundError';
     this.stack = `${this.message}\n${new Error().stack}`;
   }
 }
@@ -83,8 +122,12 @@ export {
   NoUserFoundError,
   UserExistsError,
   NoLocationFoundError,
+  NoPriceFoundError,
+  NoProduceFoundError,
   NoValidRoleError,
   NoTypeFoundError,
   NoTypesFoundError,
+  RequiredFieldsError,
   TypeAlreadyDeletedError,
+  UpdatePriceError,
  };

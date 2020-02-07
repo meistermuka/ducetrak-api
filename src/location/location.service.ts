@@ -10,7 +10,7 @@ import { Location } from './location.entity';
 import {
   NoUserFoundError, NoLocationFoundError, InvalidUpdateFieldsError
 } from '../shared';
-import { allDeleted } from '../shared/utils';
+import { allDeleted, filterUserRelation } from '../shared/utils';
 
 
 @Injectable()
@@ -21,28 +21,18 @@ export class LocationService {
     @InjectRepository(User) private readonly userRepository: Repository<User>,
   ) {}
 
-  private filterUserRelation(location: Location): void {
-    location.user = new User({
-      id: location.user.id,
-      firstName: location.user.firstName,
-      lastName: location.user.lastName,
-      userName: location.user.userName,
-      email: location.user.email,
-    });
-  }
-
   async getAllLocations(): Promise<Location[]> {
     const locations = await this.locationRepository.find({ relations: ['user']});
     if(locations.every(allDeleted) || isEmpty(locations)) {
       throw new NoLocationFoundError('No Locations Found');
     }
-    locations.map(location => this.filterUserRelation(location));
+    locations.map(location => filterUserRelation(location));
     return locations;
   }
 
   async getLocation(id: number): Promise<Location> {
     const location = await this.locationRepository.findOne({ id }, { relations: ['user']});
-    this.filterUserRelation(location);
+    filterUserRelation(location);
     return location;
   }
 
@@ -57,7 +47,7 @@ export class LocationService {
     if (isEmpty(user) || user.isDeleted()) {
         throw new NoUserFoundError();
     }
-    this.filterUserRelation(location);
+    filterUserRelation(location);
     return await this.locationRepository.save(location);
   }
 
@@ -77,7 +67,7 @@ export class LocationService {
     }
 
     Object.assign(location, locationDto);
-    this.filterUserRelation(location);
+    filterUserRelation(location);
     return await this.locationRepository.save(location);
   }
 

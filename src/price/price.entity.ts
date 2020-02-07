@@ -1,31 +1,28 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, BaseEntity } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
 import { Produce as ProduceEntity } from '../produce/produce.entity';
 import { User as UserEntity } from '../user/user.entity';
+import { CommonEntity } from '../shared';
 
 @Entity()
-export class Price extends BaseEntity {
-    @PrimaryGeneratedColumn()
-    id: number;
+export class Price extends CommonEntity {
 
-    @Column()
-    price: number;
+  constructor() {
+    super();
+  }
+  
+  @PrimaryGeneratedColumn()
+  id: number;
 
-    @Column()
-    unit: string;
+  @Column()
+  price: number;
 
-    @ManyToOne(type => ProduceEntity, produceEntity => produceEntity.price)
-    produce: ProduceEntity;
+  @Column()
+  unit: string;
 
-    @ManyToOne(type => UserEntity, userEntity => userEntity.price)
-    user: UserEntity;
+  @ManyToOne(type => ProduceEntity, produceEntity => produceEntity.price)
+  produce: ProduceEntity;
 
-    @Column('timestamp')
-    createdDate: string;
+  @ManyToOne(type => UserEntity, userEntity => userEntity.price)
+  user: UserEntity;
 
-    @Column({ default: 'true' })
-    active: boolean;
-
-    isActive(): boolean {
-      return this.active;
-    }
 }

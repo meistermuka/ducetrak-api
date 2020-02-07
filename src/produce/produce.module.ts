@@ -8,12 +8,13 @@ import { Produce as ProduceEntity } from './produce.entity';
 import { Location as LocationEntity } from '../location/location.entity';
 import { User as UserEntity } from '../user/user.entity';
 import { Type as TypeEntity } from '../core/entities/type.entity';
+import { Price as PriceEntity } from '../price/price.entity';
 
 @Module({
   controllers: [ProduceController],
   providers: [PriceService, ProduceService],
   imports: [
-    TypeOrmModule.forFeature([LocationEntity, ProduceEntity, UserEntity, TypeEntity]),
+    TypeOrmModule.forFeature([LocationEntity, ProduceEntity, UserEntity, TypeEntity, PriceEntity]),
   ]
 })
 export class ProduceModule { }
