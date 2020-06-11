@@ -21,7 +21,11 @@ export class AuthService {
   }
 
   async login(user: any) {
-    const payload = { username: user.userName, sub: user.id };
+    const payload = {
+      username: user.userName,
+      role: user.role,
+      sub: user.id
+    };
     return {
       access_token: jwt.sign(payload, this.configService.get('TOKEN_SECRET'), {
         expiresIn: '300s',

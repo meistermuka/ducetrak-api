@@ -1,4 +1,4 @@
-import {MigrationInterface, QueryRunner} from "typeorm";
+import { MigrationInterface, QueryRunner } from "typeorm";
 
 export class InitialMigration1577381284207 implements MigrationInterface {
 
@@ -16,7 +16,7 @@ export class InitialMigration1577381284207 implements MigrationInterface {
             CONSTRAINT "PK_user_id" PRIMARY KEY (id),
             CONSTRAINT "UQ_userName" UNIQUE ("userName"),
             CONSTRAINT "UQ_email" UNIQUE (email)
-        
+
         )
         `);
         await queryRunner.query(`ALTER TABLE "user" OWNER to postgres`);

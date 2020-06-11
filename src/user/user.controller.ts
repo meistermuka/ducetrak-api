@@ -1,8 +1,9 @@
 import {
   BadRequestException, Body, Controller, Delete, Get, Post,
-  Put, Param, UseInterceptors, ClassSerializerInterceptor
+  Put, Param, UseInterceptors, ClassSerializerInterceptor, UseGuards,
 } from '@nestjs/common';
 
+import { AuthGuard } from '@nestjs/passport';
 import { UserDto } from './user.dto';
 import { UserService } from './user.service';
 import { User } from './user.entity';
@@ -18,6 +19,7 @@ export class UserController {
 
   constructor(private userService: UserService) {}
 
+  @UseGuards(AuthGuard('jwt'))
   @Get()
   async getAllUsers(): Promise<User[]> {
     try {

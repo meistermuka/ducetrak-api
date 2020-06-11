@@ -19,13 +19,23 @@ export class ConfigService {
   private readonly envConfig: EnvConfig;
 
   constructor(filePath: string) {
-    const config = dotenv.parse(fs.readFileSync(filePath));
+    let config = {};
+
+    console.log(`FILE PATH: ${filePath}`);
+
+    if(fs.existsSync(filePath)) {
+      config = dotenv.parse(fs.readFileSync(filePath));
+    } else {
+      config = dotenv.config().parsed;
+    }
+
+    console.log(`CONFIG: ${JSON.stringify(config, null, 2)}`);
+
     this.envConfig = this.validateInput(config);
   }
 
   private validateInput(envConfig: EnvConfig): EnvConfig {
     const envVarsSchema: Joi.ObjectSchema = Joi.object({
-      NODE_ENV: Joi.string().valid('development', 'production', 'test').default('development'),
       HMAC_KEY: Joi.string().required(),
       TOKEN_SECRET: Joi.string().required(),
       TYPEORM_HOST: Joi.string().required(),
@@ -54,6 +64,8 @@ export class ConfigService {
   }
 
   public getTypeOrmConfig(): TypeOrmModuleOptions {
+    const SOURCE_PATH = process.env.NODE_ENV === 'production' ? 'dist' : 'src';
+
     return {
       type: 'postgres',
       host: this.get('TYPEORM_HOST'),
@@ -61,12 +73,15 @@ export class ConfigService {
       username: this.get('TYPEORM_USERNAME'),
       password: this.get('TYPEORM_PASSWORD'),
       database: this.get('TYPEORM_DATABASE'),
-      //synchronize: true,
+      synchronize: true,
       entities: [TypeEntity, ProduceEntity, LocationEntity, PriceEntity, UserEntity, RoleEntity],
       migrationsTableName: this.get('TYPEORM_MIGRATION_TABLE'),
-      migrations: ['migration/*.ts'],
+      migrations: [`./${SOURCE_PATH}/migration/*{.ts,.js}`],
       cli: {
           migrationsDir: 'migration',
+      },
+      extra: {
+        ssl: true,
       }
     };
   }
